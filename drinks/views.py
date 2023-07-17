@@ -1,6 +1,6 @@
 from django.http import JsonResponse 
-from  drinks.models import Drinks
-from drinks.serializers import DrinkSerializer
+from  drinks.models import Drinks,Article
+from .serializers import ArticleSerializer, DrinkSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status 
@@ -45,4 +45,10 @@ def drink_detail(request, id, format=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     
+@api_view(['GET'])
+def article_detail(request):
+    if request.method == 'GET':
+        article = Article.objects.all()
+        serializer = ArticleSerializer(article, many = True)
+        return JsonResponse(serializer.data, safe=False)
     
