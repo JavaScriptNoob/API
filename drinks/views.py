@@ -1,6 +1,6 @@
 from django.http import JsonResponse 
-from  drinks.models import Drinks,Article
-from .serializers import ArticleSerializer, DrinkSerializer
+from  drinks.models import Drinks,Article, Categories
+from .serializers import ArticleSerializer, DrinkSerializer, CategorySerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status 
@@ -52,3 +52,19 @@ def article_detail(request):
         serializer = ArticleSerializer(article, many = True)
         return JsonResponse(serializer.data, safe=False)
     
+@api_view(['GET'])
+def category_list(request):
+    if request.method == 'GET':
+        categories = Categories.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return JsonResponse(serializer.data, safe=False)
+@api_view(['GET'])  
+def articles_in_category(request, category_id):
+    try:
+        category = Categories.objects.get(pk=category_id)
+    except Categories.DoesNotExist:
+        return JsonResponse({'error': 'Category not found'}, status=404)
+
+    articles = Article.objects.filter(category=category)
+    serializer = ArticleSerializer(articles, many=True)
+    return JsonResponse(serializer.data, safe=False)
